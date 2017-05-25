@@ -365,13 +365,13 @@ var ImgCache = {
     Private.createCacheDir = function (success_callback, error_callback) {
         if (!ImgCache.attributes.filesystem) {
             ImgCache.overridables.log('Filesystem instance was not initialised', LOG_LEVEL_ERROR);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback({ message: "Filesystem instance was not initialised" }); }
             return;
         }
 
         var _fail = function (error) {
             ImgCache.overridables.log('Failed to get/create local cache directory: ' + error.code, LOG_LEVEL_ERROR);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback(error); }
         };
         var _getDirSuccess = function (dirEntry) {
             ImgCache.attributes.dirEntry = dirEntry;
@@ -519,7 +519,7 @@ var ImgCache = {
                         var base64content = e.target.result;
                         if (!base64content) {
                             ImgCache.overridables.log('File in cache ' + filename + ' is empty', LOG_LEVEL_WARNING);
-                            if (error_callback) { error_callback($element); }
+                            if (error_callback) { error_callback({ message: 'File in cache ' + filename + ' is empty' }); }
                             return;
                         }
                         set_path_callback($element, base64content, img_src);
@@ -530,7 +530,7 @@ var ImgCache = {
                 };
                 var _fail = function (error) {
                     ImgCache.overridables.log('Failed to read file ' + error.code, LOG_LEVEL_ERROR);
-                    if (error_callback) { error_callback($element); }
+                    if (error_callback) { error_callback(error); }
                 };
 
                 entry.file(_win, _fail);
@@ -545,7 +545,7 @@ var ImgCache = {
         // if file does not exist in cache, cache it now!
         var _fail = function () {
             ImgCache.overridables.log('File ' + filename + ' not in cache', LOG_LEVEL_INFO);
-            if (error_callback) { error_callback($element); }
+            if (error_callback) { error_callback({ message: 'File ' + filename + ' not in cache' }); }
         };
         ImgCache.attributes.filesystem.root.getFile(Private.getCachedFilePath(img_src), {create: false}, _gotFileEntry, _fail);
     };
@@ -595,7 +595,7 @@ var ImgCache = {
         };
         var _fail = function (error) {
             ImgCache.overridables.log('Failed to initialise LocalFileSystem ' + error.code, LOG_LEVEL_ERROR);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback(error); }
         };
         if (Helpers.isCordova() && window.requestFileSystem) {
             // PHONEGAP
@@ -620,7 +620,7 @@ var ImgCache = {
             window.storageInfo = window.storageInfo || (ImgCache.options.usePersistentCache ? navigator.webkitPersistentStorage : navigator.webkitTemporaryStorage);
             if (!window.storageInfo) {
                 ImgCache.overridables.log('Your browser does not support the html5 File API', LOG_LEVEL_WARNING);
-                if (error_callback) { error_callback(); }
+                if (error_callback) { error_callback({ message: 'Your browser does not support the html5 File API' }); }
                 return;
             }
             // request space for storage
@@ -635,7 +635,7 @@ var ImgCache = {
                 function (error) {
                     /* error*/
                     ImgCache.overridables.log('Failed to request quota: ' + error.message, LOG_LEVEL_ERROR);
-                    if (error_callback) { error_callback(); }
+                    if (error_callback) { error_callback(error); }
                 }
             );
         }
@@ -705,7 +705,7 @@ var ImgCache = {
                 if (error.source) { ImgCache.overridables.log('Download error source: ' + error.source, LOG_LEVEL_ERROR); }
                 if (error.target) { ImgCache.overridables.log('Download error target: ' + error.target, LOG_LEVEL_ERROR); }
                 ImgCache.overridables.log('Download error code: ' + error.code, LOG_LEVEL_ERROR);
-                if (error_callback) { error_callback(); }
+                if (error_callback) { error_callback(error); }
             },
             on_progress
         );
@@ -746,7 +746,7 @@ var ImgCache = {
     ImgCache.getCachedFileURL = function (img_src, success_callback, error_callback) {
         var _getURL = function (img_src, entry) {
             if (!entry) {
-                if (error_callback) { error_callback(img_src); }
+                if (error_callback) { error_callback({ message: 'File not found', source: img_src }); }
             } else {
                 success_callback(img_src, Helpers.EntryGetURL(entry));
             }
@@ -821,7 +821,7 @@ var ImgCache = {
             },
             function (error) {
                 ImgCache.overridables.log('Failed to remove directory or its contents: ' + error.code, LOG_LEVEL_ERROR);
-                if (error_callback) { error_callback(); }
+                if (error_callback) { error_callback(error); }
             }
         );
     };
@@ -833,7 +833,7 @@ var ImgCache = {
         var filePath = Private.getCachedFilePath(img_src);
         var _fail = function (error) {
             ImgCache.overridables.log('Failed to remove file due to ' + error.code, LOG_LEVEL_ERROR);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback(error); }
         };
         ImgCache.attributes.filesystem.root.getFile(filePath, { create: false }, function (fileEntry) {
             fileEntry.remove(
@@ -861,7 +861,7 @@ var ImgCache = {
         var img_src = Private.getBackgroundImageURL($div);
         if (!img_src) {
             ImgCache.overridables.log('No background to cache', LOG_LEVEL_WARNING);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback({ message: 'No background to cache', source: img_src }); }
             return;
         }
 
@@ -878,7 +878,7 @@ var ImgCache = {
         var img_src = Private.getBackgroundImageURL($div);
         if (!img_src) {
             ImgCache.overridables.log('No background to cache', LOG_LEVEL_WARNING);
-            if (error_callback) { error_callback(); }
+            if (error_callback) { error_callback({ message: 'No background to cache', source: img_src }); }
             return;
         }
 
