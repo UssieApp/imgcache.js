@@ -440,7 +440,7 @@ var ImgCache = {
             // mock up FileTransferError, so at least caller knows there was a problem.
             // Normally, the error.code in the callback is a FileWriter error, we return 0 if the error was an XHR error
             if (error_callback) {
-                error_callback({code: 0, source: uri, target: localPath});
+                error_callback({code: 0, source: uri, target: localPath });
             }
         };
         var xhr = new XMLHttpRequest();
@@ -519,7 +519,7 @@ var ImgCache = {
                         var base64content = e.target.result;
                         if (!base64content) {
                             ImgCache.overridables.log('File in cache ' + filename + ' is empty', LOG_LEVEL_WARNING);
-                            if (error_callback) { error_callback({ message: 'File in cache ' + filename + ' is empty' }); }
+                            if (error_callback) { error_callback({ message: 'File in cache is empty', source: filename }); }
                             return;
                         }
                         set_path_callback($element, base64content, img_src);
@@ -545,7 +545,7 @@ var ImgCache = {
         // if file does not exist in cache, cache it now!
         var _fail = function () {
             ImgCache.overridables.log('File ' + filename + ' not in cache', LOG_LEVEL_INFO);
-            if (error_callback) { error_callback({ message: 'File ' + filename + ' not in cache' }); }
+            if (error_callback) { error_callback({ message: 'File not in cache', source: filename }); }
         };
         ImgCache.attributes.filesystem.root.getFile(Private.getCachedFilePath(img_src), {create: false}, _gotFileEntry, _fail);
     };
